@@ -53,14 +53,11 @@ class AccessService {
         );
         console.log(`Create Token Success::`, tokens);
         return {
-          code: 201,
-          metaData: {
             shop: getInfoData({
               fields: ["id", "name", "email"],
               object: newShop,
             }),
             tokens,
-          },
         };
       }
       return {

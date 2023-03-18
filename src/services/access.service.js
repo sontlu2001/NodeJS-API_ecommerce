@@ -17,6 +17,11 @@ const RoleShop = {
 };
 class AccessService {
 
+  static logout = async (keyStore) => {
+    const delKey = await KeyTokenService.removeKeyById(keyStore._id);
+    return delKey;
+  }
+
   /**
    * process login.
    * @param {string} refreshToken - user đó đã đăng nhập trước đó và tạo một phiên login mới => xoá token cũ trước đó.
@@ -34,7 +39,7 @@ class AccessService {
     const publicKey = crypto.randomBytes(64).toString("hex");
 
     //4. Generate tokens
-    const userId= foundShop._id;
+    const userId = foundShop._id;
     const tokens = await createTokenPair(
       { userId, email },
       publicKey,
@@ -43,7 +48,7 @@ class AccessService {
     //5. Get Data return login
     await KeyTokenService.createKeyToken({
       userId,
-      publicKey, 
+      publicKey,
       privateKey,
       refreshToken: tokens.refreshToken,
     })
@@ -55,6 +60,7 @@ class AccessService {
       tokens,
     };
   }
+
   static signUp = async ({ name, email, password }) => {
     // check email exists ??
     const holderShop = await shopModel.findOne({ email }).lean();

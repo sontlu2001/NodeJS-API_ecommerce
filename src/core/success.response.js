@@ -44,7 +44,11 @@ class CREATED extends SuccessResponse {
     this.options = options
   }
 }
+
+
+
 module.exports = {
   OK,
   CREATED,
+  SuccessResponse
 };

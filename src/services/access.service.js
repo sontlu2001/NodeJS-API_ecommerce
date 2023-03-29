@@ -4,9 +4,9 @@ const shopModel = require("../models/shop.model");
 const bcrypt = require("bcrypt");
 const crypto = require("node:crypto");
 const KeyTokenService = require("./keyToken.service");
-const { createTokenPair } = require("../auth/authUtils");
+const { createTokenPair, verifyJWT } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
-const { BadRequestError, ConflictRequestError } = require("../core/error.response");
+const { BadRequestError, ConflictRequestError, ForbiddenError, AuthFailureError } = require("../core/error.response");
 const { findByEmail } = require("./shop.service");
 
 const RoleShop = {
@@ -16,6 +16,33 @@ const RoleShop = {
   ADMIN: "ADMIN",
 };
 class AccessService {
+
+  static handleRefreshToken = async({keyStore,user,refreshToken})=>{
+    const{userId,email} = user;
+     // check Token đã được sử dụng chưa ?
+    if(keyStore.refreshTokenUsed.includes(refreshToken)){
+      // phát hiện nghi vấn => user login lại
+      await KeyTokenService.deleteKeyById(userId);
+      throw new ForbiddenError('Some thing wrong happened !! Please login')
+    }
+    if(keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered')
+    const foundShop = await findByEmail({email})
+    // create 1 cap tokens moi
+    const tokens = await createTokenPair({userId,email},foundShop.publicKey,foundShop.privateKey)
+    // update Token
+    await keyStore.update({
+      $set:{
+        refreshToken:tokens.refreshToken
+      },
+      $addToSet:{
+        refreshTokenUsed:refreshToken
+      }
+    })
+    return {
+      user,
+      tokens
+    }
+  }
 
   static logout = async (keyStore) => {
     const delKey = await KeyTokenService.removeKeyById(keyStore._id);

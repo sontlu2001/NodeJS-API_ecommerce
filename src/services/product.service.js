@@ -2,20 +2,20 @@
 
 const { BadRequestError } = require('../core/error.response')
 const { product, electronic, clothing, furniture } = require('../models/product.model')
+const { 
+    findAllDraftsForShop,
+    publishProductByShop,
+    findAllPublicForShop,
+    unPublishProductByShop,
+    searchProduct,
+    findAllProduct,
+    findProduct,
+    updateProductById,
+} = require('../models/repositories/product.repo')
+const { removeUndefinedObject, updateNestedObjectParser } = require('../utils')
 
 // define Factory class to create product
 class ProductFactory {
-    // C1
-    // static async createProduct(type,payload) {
-    //     switch (type) {
-    //         case 'Electronic':
-    //             return new Electronic(payload).createProduct()
-    //         case 'Clothing':
-    //             return new Clothing(payload).createProduct()
-    //         default:
-    //             throw new BadRequestError(`Invalid type ${type}`)
-    //     }
-    // }
     static productRegister = {}
     static registerProductType(type,classRef){
         ProductFactory.productRegister[type] = classRef
@@ -24,7 +24,41 @@ class ProductFactory {
         const productClass = ProductFactory.productRegister[type]
         if(!productClass) throw new BadRequestError(`Invalid type ${type}`)
         return new productClass(payload).createProduct()
+    }
+    static async updateProduct(type, productId, payload) {
+        const productClass = ProductFactory.productRegister[type]
+        if (!productClass) throw new BadRequestError(`Invalid type ${type}`)
+        return new productClass(payload).updateProduct(productId)
+    }
+    // PUT
+    static async publishProductByShop({product_shop, product_id}){
+        return await publishProductByShop({product_shop, product_id})
+    }
+    static async unPublishProductByShop({product_shop, product_id}){
+        return await unPublishProductByShop({product_shop, product_id})
+    }
+    // END PUT
 
+    // Query
+    static async findAllDraftsForShop({product_shop, limit = 50, skip = 0}){
+        const query = {product_shop, isDraft:true}
+        return await findAllDraftsForShop({query,limit,skip})
+    }
+    static async findAllPublicForShop({product_shop, limit = 50, skip = 0}){
+        const query = {product_shop, isPublished:true}
+        return await findAllPublicForShop({query,limit,skip})
+    }
+    static async searchProduct({keySearch}){
+        return await searchProduct({keySearch})
+    }
+    // detail
+    static async findProduct({product_id}){
+        return await findProduct({product_id, unSelect:['__v']})
+    }
+    static async findAllProduct({limit = 50, sort = 'ctime', page = 1,filter={isPublished:true} }){
+        return await findAllProduct({limit, sort, page,filter,
+            select:['product_name','product_thumb','product_price','product_ratingsAverage']
+        })
     }
 }
 // define base product class
@@ -48,15 +82,40 @@ class Product {
             _id:productId,
         })
     }
+    // update product
+    async updateProduct(productId,payload){
+        return await updateProductById({productId,payload,model: product})
+    }
 }
+
 // Define sub-class for different product types Clothing
 class Clothing extends Product{
     async createProduct(){
-        const newcClothing = await clothing.create(this.product_attributes)
-        if(!newcClothing) throw new BadRequestError('create new Clothing error')
-        const newProduct = await super.createProduct()
+        const newClothing = await clothing.create({
+            ... this.product_attributes,
+            product_shop: this.product_shop
+        })
+        if(!newClothing) throw new BadRequestError('create new Clothing error')
+        const newProduct = await super.createProduct(newClothing._id)
         if(!newProduct) throw new BadRequestError('create new Product error')
         return newProduct;
+    }
+    async updateProduct(productId){
+        // 1. remove attr has null or undefined
+        const objectParams = removeUndefinedObject(this) 
+        // 2. check xem update ở đâu
+        if(objectParams.product_attributes){
+            // update clothing                        
+            await updateProductById({
+                productId, 
+                payload: updateNestedObjectParser(objectParams.product_attributes), 
+                model: clothing
+            })
+        }
+        const updateProduct = await super.updateProduct(productId, updateNestedObjectParser(objectParams))
+        if(!updateProduct) throw new BadRequestError("Can't found product")
+        
+        return updateProduct
     }
 }
 

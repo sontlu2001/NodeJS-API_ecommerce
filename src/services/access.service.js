@@ -6,7 +6,7 @@ const crypto = require("node:crypto");
 const KeyTokenService = require("./keyToken.service");
 const { createTokenPair, verifyJWT } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
-const { BadRequestError, ConflictRequestError, ForbiddenError, AuthFailureError } = require("../core/error.response");
+const { BadRequestError, ConflictRequestError, Error, AuthFailureError } = require("../core/error.response");
 const { findByEmail } = require("./shop.service");
 
 const RoleShop = {
@@ -17,25 +17,25 @@ const RoleShop = {
 };
 class AccessService {
 
-  static handleRefreshToken = async({keyStore,user,refreshToken})=>{
-    const{userId,email} = user;
-     // check Token đã được sử dụng chưa ?
-    if(keyStore.refreshTokenUsed.includes(refreshToken)){
+  static handleRefreshToken = async ({ keyStore, user, refreshToken }) => {
+    const { userId, email } = user;
+    // check Token đã được sử dụng chưa ?
+    if (keyStore.refreshTokenUsed.includes(refreshToken)) {
       // phát hiện nghi vấn => user login lại
       await KeyTokenService.deleteKeyById(userId);
       throw new ForbiddenError('Some thing wrong happened !! Please login')
     }
-    if(keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered')
-    const foundShop = await findByEmail({email})
+    if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered')
+    const foundShop = await findByEmail({ email })
     // create 1 cap tokens moi
-    const tokens = await createTokenPair({userId,email},foundShop.publicKey,foundShop.privateKey)
+    const tokens = await createTokenPair({ userId, email }, foundShop.publicKey, foundShop.privateKey)
     // update Token
     await keyStore.update({
-      $set:{
-        refreshToken:tokens.refreshToken
+      $set: {
+        refreshToken: tokens.refreshToken
       },
-      $addToSet:{
-        refreshTokenUsed:refreshToken
+      $addToSet: {
+        refreshTokenUsed: refreshToken
       }
     })
     return {

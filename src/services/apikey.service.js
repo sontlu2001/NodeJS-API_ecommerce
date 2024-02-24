@@ -4,7 +4,10 @@ const crypto = require('crypto')
 
 const findById = async(key)=>{
     // test create apikey
-    //const newKey = await apiKeyModel.create({key:crypto.randomBytes(64).toString('hex'),permissions:['0000']})
+    // const newKey = await apiKeyModel.create({
+    //     key:crypto.randomBytes(64).toString('hex'),
+    //     permissions:['0000']
+    // })
     const objKey = await apiKeyModel.findOne({key,status:true}).lean()
     return objKey
 }

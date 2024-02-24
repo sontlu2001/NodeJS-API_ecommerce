@@ -67,11 +67,7 @@ class AccessService {
 
     //4. Generate tokens
     const userId = foundShop._id;
-    const tokens = await createTokenPair(
-      { userId, email },
-      publicKey,
-      privateKey
-    );
+    const tokens = await createTokenPair({ userId, email }, publicKey, privateKey);
     //5. Get Data return login
     await KeyTokenService.createKeyToken({
       userId,
@@ -81,7 +77,7 @@ class AccessService {
     })
     return {
       shop: getInfoData({
-        fields: ["id", "name", "email"],
+        fields: ["_id", "name", "email"],
         object: foundShop,
       }),
       tokens,

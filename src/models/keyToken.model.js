@@ -4,6 +4,7 @@ const { Schema, model } = require("mongoose"); // Erase if already required
 
 const COLLECTION_NAME = "Keys";
 const DOCUMENTION_NAME = "key";
+
 // Declare the Schema of the Mongo model
 const keyTokenSchema = new Schema(
   {

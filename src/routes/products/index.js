@@ -9,15 +9,17 @@ const router = express.Router()
 router.get('/search/:keySearch',asyncHandler(productController.getListSearchProduct))
 router.get('',asyncHandler(productController.findAllProduct))
 router.get('/:product_id',asyncHandler(productController.findProduct))
-// list routers must be authentication
+
+// list routers must be authenticated
 router.use(authentication)
-// 
+
+// create, update, publish, unpublish
 router.post('', asyncHandler(productController.createProduct))
 router.patch('/:productId', asyncHandler(productController.updateProduct))
 router.post('/publish/:id', asyncHandler(productController.publishProductByShop))
 router.post('/unpublish/:id', asyncHandler(productController.unPublishProductByShop))
 
-// query
+// draft, published
 router.get('/drafts/all',asyncHandler(productController.findAllDraftsForShop))
 router.get('/published/all',asyncHandler(productController.findAllPublicForShop))
 

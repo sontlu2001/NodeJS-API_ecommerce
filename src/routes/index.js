@@ -9,6 +9,7 @@ router.use(apiKey)
 router.use(permission('0000'))
 
 router.use('/v1/api/product',require('./products'))
-router.use('/v1/api',require('./access'))
+router.use('/v1/api/discount',require('./discounts'))
+router.use('/v1/api',require('./access') )
 
 module.exports = router

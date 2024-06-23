@@ -12,8 +12,8 @@ class Database {
   // connect
   connect(type = "mongodb") {
     if (1 === 1) {
-      mongoose.set("debug", true);
-      mongoose.set("debug", { color: true });
+      // mongoose.set("debug", true);
+      // mongoose.set("debug", { color: true });
     }
     mongoose
       .connect(connectString, {
@@ -21,8 +21,9 @@ class Database {
       })
       
       .then((_) => {
-        console.log(host,name,port);
-        console.log(`Connect Mongodb Success countConnect::`, countConnect());
+        console.log(`Connect Mongodb Success`);
+        // console.log("",host,name,port);
+        // console.log(`Connect Mongodb Success countConnect::`, countConnect());
       })
       .catch((err) => console.log(`!!!Error Connect`));
   }

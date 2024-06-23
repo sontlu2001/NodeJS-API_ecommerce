@@ -1,7 +1,7 @@
 'use strict'
 const { Types } = require('mongoose')
 const { product,electronic,clothing,furniture } = require('../../models/product.model')
-const {getSelectData,unGetSelectData} = require('../../utils/index')
+const {getSelectData,getUnSelectData} = require('../../utils/index')
 
 const findAllDraftsForShop = async ({query,limit,skip})=>{
    return await queryProduct({query,limit,skip})
@@ -68,7 +68,7 @@ const findAllProduct = async({limit, sort, page,filter,select})=>{
 }
 
 const findProduct = async({product_id, unSelect})=>{
-return await product.findById(product_id).select(unGetSelectData(unSelect))
+return await product.findById(product_id).select(getUnSelectData(unSelect))
 }
 
 const updateProductById = async({ productId, payload, model, isNew = true}) => {

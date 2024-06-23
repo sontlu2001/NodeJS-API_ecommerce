@@ -1,6 +1,7 @@
 "use strict";
 
 const _ = require("lodash");
+const { Types } = require("mongoose");
 
 const getInfoData = ({ fields = [], object = {} }) => {
   return _.pick(object, fields);
@@ -11,7 +12,7 @@ const getSelectData = (select = []) => {
   return Object.fromEntries(select.map(e => [e, 1]))
 }
 
-const unGetSelectData = (select = []) => {
+const getUnSelectData = (select = []) => {
   return Object.fromEntries(select.map(e => [e, 0]))
 }
 
@@ -38,6 +39,7 @@ const removeUndefinedObject= (obj) =>{
     }
   }
 */
+
 const updateNestedObjectParser = (obj)=>{
   const final ={}
   Object.keys(obj).forEach(k => {
@@ -54,10 +56,13 @@ const updateNestedObjectParser = (obj)=>{
   return final
 }
 
+const convertToObjectMongodb = id => Types.ObjectId(id);
+
 module.exports = {
   getInfoData,
   getSelectData,
-  unGetSelectData,
+  getUnSelectData,
   removeUndefinedObject,
-  updateNestedObjectParser
+  updateNestedObjectParser,
+  convertToObjectMongodb
 };

@@ -19,7 +19,7 @@ class Database {
       .connect(connectString, {
         maxPoolSize: 50,
       })
-      
+
       .then((_) => {
         console.log(`Connect Mongodb Success`);
         // console.log("",host,name,port);

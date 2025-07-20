@@ -7,6 +7,8 @@ const dev = {
     host: process.env.DEV_DB_HOST|| "127.0.0.1",
     port: process.env.DEV_DB_PORT|| 27017,
     name: process.env.DEV_DB_NAME|| "shopDEV",
+    username: process.env.DEV_DB_USER || "",
+    password: process.env.DEV_DB_PASS || ""
   },
 };
 const pro = {

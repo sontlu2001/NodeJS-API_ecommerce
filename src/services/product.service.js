@@ -1,7 +1,7 @@
 "use strict";
 
 const { BadRequestError } = require("../core/error.response");
-const { 
+const {
   product,
   electronic,
   clothing,
@@ -21,6 +21,7 @@ const {
   updateProductById,
 } = require("../models/repositories/product.repo");
 const { removeUndefinedObject, updateNestedObjectParser } = require("../utils");
+const { pushNotificationSystem } = require("./notification.service");
 
 // define Factory class to create product
 class ProductFactory {
@@ -94,7 +95,6 @@ class ProductFactory {
 
 // define base product class
 class Product {
-
   constructor({
     product_name,
     product_thumb,
@@ -125,6 +125,18 @@ class Product {
         shopId: this.product_shop,
         stock: this.product_quantity,
       });
+      // push notification to system
+      pushNotificationSystem({
+        type: "SHOP-001",
+        receivedId: 1,
+        senderId: this.product_shop, // Assuming 0 is a system user
+        options: {
+          product_name: this.product_name,
+          shop_name: this.product_shop,
+        },
+      })
+        .then((rs) => console.log(rs))
+        .catch((err) => console.error("Error pushing notification:", err));
     }
     return newProduct;
   }

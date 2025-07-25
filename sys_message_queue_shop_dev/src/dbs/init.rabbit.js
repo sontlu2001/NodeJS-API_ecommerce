@@ -47,7 +47,27 @@ const connectToRabbitMQForTest = async () => {
   }
 };
 
+const consumerQueue = async (channel, queueName) => {
+  try {
+    await channel.assertQueue(queueName, { durable: true });
+    channel.consume(queueName, (msg) => {
+      if (msg !== null) {
+        console.log(`Received message: ${msg.content.toString()}`);
+        channel.ack(msg); // Acknowledge the message
+      } else {
+        console.log("No messages in queue");
+      }
+    }, {
+      noAck: true
+    });
+  } catch (error) {
+    console.error("Error in consumer queue:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   connectToRabbitMQ,
-  connectToRabbitMQForTest
+  connectToRabbitMQForTest,
+  consumerQueue
 };

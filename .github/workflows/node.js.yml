@@ -22,4 +22,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: ecommerce-backend/package-lock.json
+    - name: Copy .env
+      run: cp ~/actions-runner/.env ~/actions-runner/_work/NodeJS-API_ecommerce/NodeJS-API_ecommerce/ecommerce-backend/
     - run: npm ci
+      working-directory: ecommerce-backend
+    - run: pm2 restart shopdev-backend

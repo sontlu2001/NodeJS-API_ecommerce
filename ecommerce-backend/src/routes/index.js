@@ -8,12 +8,12 @@ router.use(apiKey)
 // check permission 
 router.use(permission('0000'))
 
-router.use('/v1/api/comment',require('./comment'))
-router.use('/v1/api/product',require('./products'))
-router.use('/v1/api/discount',require('./discounts'))
-router.use('/v1/api/cart',require('./cart'))
-router.use('/v1/api/upload',require('./upload'))
-router.use('/v1/api',require('./access') )
-router.use('/v1/api/notification',require('./notification'))
+router.use('/api/v1/comment',require('./comment'))
+router.use('/api/v1/product',require('./products'))
+router.use('/api/v1/discount',require('./discounts'))
+router.use('/api/v1/cart',require('./cart'))
+router.use('/api/v1/upload',require('./upload'))
+router.use('/api/v1',require('./access') )
+router.use('/api/v1/notification',require('./notification'))
 
 module.exports = router

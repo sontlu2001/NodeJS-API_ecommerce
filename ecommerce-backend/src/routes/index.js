@@ -8,6 +8,8 @@ router.use(apiKey)
 // check permission 
 router.use(permission('0000'))
 
+router.use('/api/v1/rbac', require('./rbac'))
+router.use('/api/v1/profile', require('./profile'))
 router.use('/api/v1/comment',require('./comment'))
 router.use('/api/v1/product',require('./products'))
 router.use('/api/v1/discount',require('./discounts'))

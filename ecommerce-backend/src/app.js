@@ -36,9 +36,9 @@ app.use((error, req, res, next) => {
     message: error.message || "Internal Server Error",
   }
   
-  if (process.env.NODE_ENV === 'dev'){
-    response.stack = error.stack
-  }
+  // if (process.env.NODE_ENV === 'dev'){
+  //   response.stack = error.stack
+  // }
 
   return res.status(statusCode).json(response);
 });
